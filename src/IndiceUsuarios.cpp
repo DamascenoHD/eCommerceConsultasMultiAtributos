@@ -22,9 +22,9 @@ const int* IndiceUsuarios::buscar_estado(const std::string& estado, int& qtd){
 }
 
 const int* IndiceUsuarios::buscar_idade(const std::string& idade, int& qtd){
-    return this->idade.buscar(idade, qtd)
+    return this->idade.buscar(idade, qtd);
 }
 
 const int* IndiceUsuarios::buscar_nacionalidade(const std::string& nacionalidade, int& qtd){
-
+    return this->nacionalidade.buscar(nacionalidade, qtd);
 }
