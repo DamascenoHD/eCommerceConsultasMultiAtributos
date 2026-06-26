@@ -56,6 +56,7 @@ int main() {
                 compra.adicionar_produto(id_produto_comprado, quantidade);
             }
             sistema.registrar_compra(compra);
+            cout << "C " << id_compra << endl;
             id_compra++;
         }else if(tipo == 'L'){
             char subtipo;
@@ -110,9 +111,8 @@ int main() {
 
                 for(int i = 0; i < qtd_acumulada; i++){
                     Usuario *usuario = sistema.buscar_usuario_por_id(resultado_acumulado[i]);
-                    cout << "LU resultado_" << i+1 << "usuario" << resultado_acumulado[i] << " " << usuario->get_nome() << " " << usuario->get_idade() << " " << usuario->get_cidade() << " " << usuario->get_estado() << " " << usuario->get_nacionalidade() << endl;
+                    cout << "LU resultado_ " << i+1 << "usuario " << resultado_acumulado[i] << " " << usuario->get_nome() << " " << usuario->get_idade() << " " << usuario->get_cidade() << " " << usuario->get_estado() << " " << usuario->get_nacionalidade() << endl;
                 }
-                cout << endl;
 
                 if(precisa_liberar && resultado_acumulado != nullptr){
                     delete[] resultado_acumulado;
@@ -163,13 +163,12 @@ int main() {
                 }
                 for(int i = 0; i < qtd_acumulada; i++){
                     Produto *produto = sistema.buscar_produto_por_id(resultado_acumulado[i]);
-                    cout << "LP resultado_" << i+1 << "poduto" <<
+                    cout << "LP resultado_" << i+1 << "produto " <<
                     resultado_acumulado[i] << " " << produto->get_nome() << " " 
                     << fixed << setprecision(2) << produto->get_preco() << " " 
                     << produto->get_qnt() << " " << produto->get_categoria() 
                     << " " << produto->get_marca() << " " << produto->get_condicao() << endl;
                 }
-                cout << endl;
 
                 if(precisa_liberar && resultado_acumulado != nullptr){
                     delete[] resultado_acumulado;
@@ -232,8 +231,6 @@ int main() {
                     << compra->get_timestamp() << " usuario " << 
                     compra->get_id_usuario() << endl;
                 }
-                cout << endl;
-
                 if(precisa_liberar && resultado_acumulado != nullptr){
                     delete[] resultado_acumulado;
                 }
@@ -290,7 +287,6 @@ int main() {
                     << resultado_acumulado[i] << " timestamp "
                     << compra->get_timestamp() << endl;
                 }
-                cout << endl;
 
                 if(precisa_liberar && resultado_acumulado != nullptr){
                     delete[] resultado_acumulado;
