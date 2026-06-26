@@ -78,8 +78,12 @@ Usuario* Sistema::buscar_usuario_por_id(int id) {
 Produto* Sistema::buscar_produto_por_id(int id) {
     return &produtos[id];
 }
-
-
+Compra* Sistema::buscar_compra_por_id(int id) {
+    return &compras[id];
+}
+Reposicao* Sistema::buscar_reposicao_por_id(int id) {
+    return &reposicoes[id];
+}
 
 void Sistema::cadastrar_usuario(const Usuario& u) {
     if (qtd_usuarios == cap_usuarios) {

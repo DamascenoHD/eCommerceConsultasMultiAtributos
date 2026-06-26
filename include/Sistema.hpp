@@ -56,6 +56,8 @@ public:
     // Métodos de recuperação (Exemplos de como acessar usando IDs ou Índices)
     Usuario* buscar_usuario_por_id(int id);
     Produto* buscar_produto_por_id(int id);
+    Compra* buscar_compra_por_id(int id);
+    Reposicao* buscar_reposicao_por_id(int id);
     
     const int* listar_usuarios_por_cidade(const std::string& cidade, int &qtd_encontrada);
     const int* listar_usuarios_por_nome(const std::string& nome, int &qtd_encontrada);
