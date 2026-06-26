@@ -56,26 +56,26 @@ public:
     // Métodos de recuperação (Exemplos de como acessar usando IDs ou Índices)
     Usuario* buscar_usuario_por_id(int id);
     Produto* buscar_produto_por_id(int id);
-
-    void listar_usuarios_por_nome(const std::string& nome);
-    void listar_usuarios_por_idade(const int idade);
-    void listar_usuarios_por_cidade(const std::string& cidade);
-    void listar_usuarios_por_estado(const std::string& estado);
-    void listar_usuarios_por_nacionalidade(const std::string& cidade);
-
-    void listar_produtos_por_nome(const std::string& nome);
-    void listar_produtos_por_categoria(const std::string& nome);
-    void listar_produtos_por_marca(const std::string& nome);
-    void listar_produtos_por_condicao(const std::string& nome);
     
-    void listar_compras_por_timestamp(int timestamp);
-    void listar_compras_por_id_usuario(int id_usuario);
-    void listar_compras_por_id_produto(int id_produto);
+    const int* listar_usuarios_por_cidade(const std::string& cidade, int &qtd_encontrada);
+    const int* listar_usuarios_por_nome(const std::string& nome, int &qtd_encontrada);
+    const int* listar_usuarios_por_idade(const int idade, int &qtd_encontrada);
+    const int* listar_usuarios_por_estado(const std::string& estado, int &qtd_encontrada);
+    const int* listar_usuarios_por_nacionalidade(const std::string& cidade, int &qtd_encontrada);
 
-    void listar_reposicoes_por_timestamp(int timestamp);
-    void listar_reposicoes_por_id_produto(int id_produto);
+    const int* listar_produtos_por_nome(const std::string& nome, int &qtd_encontrada);
+    const int* listar_produtos_por_categoria(const std::string& nome, int &qtd_encontrada);
+    const int* listar_produtos_por_marca(const std::string& nome, int &qtd_encontrada);
+    const int* listar_produtos_por_condicao(const std::string& nome, int &qtd_encontrada);
+    
+    const int* listar_compras_por_timestamp(int timestamp, int &qtd_encontrada);
+    const int* listar_compras_por_id_usuario(int id_usuario, int &qtd_encontrada);
+    const int* listar_compras_por_id_produto(int id_produto, int &qtd_encontrada);
 
-    int intersectar_vetores(const int* v1, int qtd1, const int* v2, int qtd2, int* v_resultado);
+    const int* listar_reposicoes_por_timestamp(int timestamp, int &qtd_encontrada);
+    const int* listar_reposicoes_por_id_produto(int id_produto, int &qtd_encontrada);
+
+    static int* intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int& qtd_res);
 };
 
 #endif

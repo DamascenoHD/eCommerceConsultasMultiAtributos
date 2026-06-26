@@ -22,3 +22,7 @@ const int* IndiceCompras::buscar_id_produto(int id_produto, int& qtd) const{
 const int* IndiceCompras::buscar_id_usuario(int id_usuario, int& qtd) const{
     return this->id_usuario.buscar(std::to_string(id_usuario), qtd);
 }
+
+IndiceCompras::IndiceCompras() {
+
+}

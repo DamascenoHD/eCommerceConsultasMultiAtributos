@@ -149,25 +149,97 @@ void Sistema::registrar_reposicao(const Reposicao& r) {
     qtd_reposicoes++;
 }
 
-void Sistema::listar_usuarios_por_cidade(const std::string& cidade) {
-    int qtd_encontrada = 0;
-    
-    // 1. O Índice Invertido busca na TabelaHash e devolve o vetor de IDs em O(1)
-    const int* ids = idx_usuarios.buscar_cidade(cidade, qtd_encontrada);
+const int* Sistema::listar_usuarios_por_cidade(const std::string& cidade, int &qtd_encontrada) {
+    return idx_usuarios.buscar_cidade(cidade, qtd_encontrada);
+}
 
-    if (ids == nullptr || qtd_encontrada == 0) {
-        std::cout << "Nenhum usuário encontrado em: " << cidade << "\n";
-        return;
-    }
+const int* Sistema::listar_usuarios_por_nome(const std::string& nome, int &qtd_encontrada){
+    return idx_usuarios.buscar_nome(nome, qtd_encontrada);
+}
 
-    // 2. Usamos os IDs para acessar DIRETAMENTE os usuários na memória
-    std::cout << "Usuários em " << cidade << ":\n";
-    for (int i = 0; i < qtd_encontrada; i++) {
-        int id_usuario = ids[i];
-        Usuario* u = buscar_usuario_por_id(id_usuario); // O(1)
+const int* Sistema::listar_usuarios_por_idade(const int idade, int &qtd_encontrada){
+    return idx_usuarios.buscar_idade(std::to_string(idade), qtd_encontrada);
+}
+
+const int* Sistema::listar_usuarios_por_estado(const std::string& estado, int &qtd_encontrada){
+    return idx_usuarios.buscar_estado(estado, qtd_encontrada);
+}
+const int* Sistema::listar_usuarios_por_nacionalidade(const std::string& nacionalidade, int &qtd_encontrada){
+    return idx_usuarios.buscar_nacionalidade(nacionalidade, qtd_encontrada);
+}
+
+const int* Sistema::listar_produtos_por_nome(const std::string& nome, int &qtd_encontrada){
+    return idx_produtos.buscar_nome(nome, qtd_encontrada);
+}
+const int* Sistema::listar_produtos_por_categoria(const std::string& categoria, int &qtd_encontrada){
+    return idx_produtos.buscar_categoria(categoria, qtd_encontrada);
+}
+const int* Sistema::listar_produtos_por_marca(const std::string& marca, int &qtd_encontrada){
+    return idx_produtos.buscar_marca(marca, qtd_encontrada);
+}
+const int* Sistema::listar_produtos_por_condicao(const std::string& condicao, int &qtd_encontrada){
+    return idx_produtos.buscar_condicao(condicao, qtd_encontrada);
+}
+
+const int* Sistema::listar_compras_por_timestamp(int timestamp, int &qtd_encontrada){
+    return idx_compras.buscar_timestamp(timestamp, qtd_encontrada);
+}
+
+const int* Sistema::listar_compras_por_id_usuario(int id_usuario, int &qtd_encontrada){
+    return idx_compras.buscar_id_usuario(id_usuario, qtd_encontrada);
+}
+
+const int* Sistema::listar_compras_por_id_produto(int id_produto, int &qtd_encontrada){
+    return idx_compras.buscar_id_produto(id_produto, qtd_encontrada);
+}
+
+
+const int* Sistema::listar_reposicoes_por_timestamp(int timestamp, int &qtd_encontrada){
+    const int* ids = idx_reposicoes.buscar_timestamp(timestamp, qtd_encontrada);
+    return ids;
+}
+const int* Sistema::listar_reposicoes_por_id_produto(int id_produto, int &qtd_encontrada){
+    return idx_reposicoes.buscar_id_produto(id_produto, qtd_encontrada);
+}
+
+int* Sistema::intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int& qtd_res) {
+        // No pior caso, o tamanho da interseção é o tamanho do menor vetor
+        int cap_max = (qtd1 < qtd2) ? qtd1 : qtd2;
         
-        if (u != nullptr) {
-            std::cout << "- " << u->get_nome() << " (ID: " << u->get_id() << ")\n";
+        if (cap_max == 0 || v1 == nullptr || v2 == nullptr) {
+            qtd_res = 0;
+            return nullptr;
         }
-    }
+
+        int* resultado_temporario = new int[cap_max];
+        int i = 0, j = 0;
+        qtd_res = 0;
+
+        // Algoritmo de dois ponteiros (Aproveita a ordenação dos IDs)
+        while (i < qtd1 && j < qtd2) {
+            if (v1[i] == v2[j]) {
+                resultado_temporario[qtd_res] = v1[i];
+                qtd_res++;
+                i++;
+                j++;
+            } else if (v1[i] < v2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+
+        if (qtd_res == 0) {
+            delete[] resultado_temporario;
+            return nullptr;
+        }
+
+        // Ajusta o tamanho do vetor para o tamanho exato do resultado (opcional, mas boa prática)
+        int* resultado_final = new int[qtd_res];
+        for (int k = 0; k < qtd_res; k++) {
+            resultado_final[k] = resultado_temporario[k];
+        }
+
+        delete[] resultado_temporario;
+        return resultado_final;
 }
