@@ -109,3 +109,5 @@ Compra& Compra::operator=(const Compra& outra) {
 
     return *this;
 }
+
+

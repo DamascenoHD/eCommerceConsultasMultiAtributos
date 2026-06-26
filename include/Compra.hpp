@@ -18,11 +18,10 @@ class Compra {
 
         Compra(const Compra& outra);
         Compra& operator=(const Compra& outra);
-
+        int get_tamanho()const;
         int get_id()const;
         int get_timestamp()const;
         int get_id_usuario()const;
-        int get_tamanho()const;
         int* get_id_produtos()const;
         int* get_qnt_produtos()const;
         

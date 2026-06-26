@@ -247,3 +247,83 @@ int* Sistema::intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int&
         delete[] resultado_temporario;
         return resultado_final;
 }
+
+void Sistema::imprimir_produtos_usuario(int id_usuario) {
+    int qtd_compras = 0;
+    std::cout << "To aqui\n";
+    // 1. Busca todas as compras que esse usuário fez
+    const int* ids_compras_usuario = idx_compras.buscar_id_usuario(id_usuario, qtd_compras);
+
+    // Se o usuário não tiver nenhuma compra, não imprime a segunda linha
+    if (qtd_compras == 0 || ids_compras_usuario == nullptr) {
+        return; 
+    }
+
+    // 2. Descobrir o tamanho máximo possível dos vetores temporários
+    int max_produtos_possiveis = 0;
+    for (int i = 0; i < qtd_compras; i++) {
+        Compra* c = buscar_compra_por_id(ids_compras_usuario[i]);
+        if (c != nullptr) {
+            max_produtos_possiveis += c->get_tamanho();
+        }
+    }
+
+    // Se o cálculo falhar ou o usuário tiver compras vazias
+    if (max_produtos_possiveis == 0) return;
+
+    // 3. Alocar vetores para consolidar os dados
+    int* produtos_unicos = new int[max_produtos_possiveis];
+    int* quantidades_totais = new int[max_produtos_possiveis];
+    int qtd_unicos = 0; 
+
+    // 4. Processar cada compra e acumular as quantidades dos produtos
+    for (int i = 0; i < qtd_compras; i++) {
+        Compra* c = buscar_compra_por_id(ids_compras_usuario[i]);
+        if (c == nullptr) continue;
+
+        int tam_compra = c->get_tamanho();
+        int* prods = c->get_id_produtos();
+        int* qnts = c->get_qnt_produtos();
+
+        for (int j = 0; j < tam_compra; j++) {
+            int id_p = prods[j];
+            int qtd_p = qnts[j];
+
+            // Verifica se o id_p já está no nosso vetor de produtos_unicos
+            bool ja_existe = false;
+            for (int k = 0; k < qtd_unicos; k++) {
+                if (produtos_unicos[k] == id_p) {
+                    quantidades_totais[k] += qtd_p;
+                    ja_existe = true;
+                    break; 
+                }
+            }
+
+            // Se não encontrou, insere como um produto novo
+            if (!ja_existe) {
+                produtos_unicos[qtd_unicos] = id_p;
+                quantidades_totais[qtd_unicos] = qtd_p;
+                qtd_unicos++;
+            }
+        }
+    }
+
+    // 5. Imprime estritamente no formato: produto_1 <id_p1> <qtd_p1> ...
+    if (qtd_unicos > 0) {
+        for (int i = 0; i < qtd_unicos; i++) {
+            std::cout << "produto_" << (i + 1) << " " 
+                      << produtos_unicos[i] << " " 
+                      << quantidades_totais[i];
+            
+            // Adiciona espaço entre os blocos, exceto no último
+            if (i < qtd_unicos - 1) {
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl; // Quebra de linha exigida no final da segunda linha
+    }
+
+    // 6. Liberação de memória dos vetores temporários
+    delete[] produtos_unicos;
+    delete[] quantidades_totais;
+}

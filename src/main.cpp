@@ -111,7 +111,14 @@ int main() {
 
                 for(int i = 0; i < qtd_acumulada; i++){
                     Usuario *usuario = sistema.buscar_usuario_por_id(resultado_acumulado[i]);
-                    cout << "LU resultado_ " << i+1 << "usuario " << resultado_acumulado[i] << " " << usuario->get_nome() << " " << usuario->get_idade() << " " << usuario->get_cidade() << " " << usuario->get_estado() << " " << usuario->get_nacionalidade() << endl;
+                    cout << "LU resultado_" << i+1 << " usuario " 
+                    << resultado_acumulado[i] << " " << usuario->get_nome() 
+                    << " " << usuario->get_idade() << " " 
+                    << usuario->get_cidade() << " " << usuario->get_estado() 
+                    << " " << usuario->get_nacionalidade() << endl;
+                    int qtd_compras = 0;
+                    const int* compras = sistema.listar_compras_por_id_usuario(usuario->get_id(),qtd_compras);
+                    sistema.imprimir_produtos_usuario(usuario->get_id());
                 }
 
                 if(precisa_liberar && resultado_acumulado != nullptr){

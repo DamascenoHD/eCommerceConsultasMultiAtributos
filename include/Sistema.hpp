@@ -78,6 +78,8 @@ public:
     const int* listar_reposicoes_por_id_produto(int id_produto, int &qtd_encontrada);
 
     static int* intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int& qtd_res);
+
+    void imprimir_produtos_usuario(int id_usuario);
 };
 
 #endif
