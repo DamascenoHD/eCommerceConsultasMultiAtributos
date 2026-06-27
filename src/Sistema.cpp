@@ -250,33 +250,49 @@ int* Sistema::intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int&
 
 void Sistema::imprimir_produtos_usuario(int id_usuario) {
     int qtd_compras = 0;
-    std::cout << "To aqui\n";
+    //std::cout << "[DEBUG] To aqui. Buscando compras para usuario " << id_usuario << "\n";
+    
     // 1. Busca todas as compras que esse usuário fez
     const int* ids_compras_usuario = idx_compras.buscar_id_usuario(id_usuario, qtd_compras);
 
-    // Se o usuário não tiver nenhuma compra, não imprime a segunda linha
+    //std::cout << "[DEBUG] Quantidade de compras encontradas no indice: " << qtd_compras << "\n";
+
+    // Se o usuário não tiver nenhuma compra, sai
     if (qtd_compras == 0 || ids_compras_usuario == nullptr) {
+        //std::cout << "[DEBUG] Parou no passo 1: Indice de compras retornou 0 ou nulo.\n";
         return; 
     }
 
-    // 2. Descobrir o tamanho máximo possível dos vetores temporários
+    // 2. Descobrir o tamanho máximo possível dos vetores
     int max_produtos_possiveis = 0;
     for (int i = 0; i < qtd_compras; i++) {
-        Compra* c = buscar_compra_por_id(ids_compras_usuario[i]);
+        int id_compra_atual = ids_compras_usuario[i];
+        Compra* c = buscar_compra_por_id(id_compra_atual);
+        
         if (c != nullptr) {
+            //std::cout << "[DEBUG] Compra ID " << id_compra_atual << " encontrada. Tamanho de produtos nela: " << c->get_tamanho() << "\n";
             max_produtos_possiveis += c->get_tamanho();
+        } else {
+            //std::cout << "[DEBUG] ALERTA: Compra ID " << id_compra_atual << " retornou nullptr!\n";
         }
     }
 
-    // Se o cálculo falhar ou o usuário tiver compras vazias
-    if (max_produtos_possiveis == 0) return;
+    //std::cout << "[DEBUG] Maximo de produtos possiveis acumulados: " << max_produtos_possiveis << "\n";
 
+    // Se o cálculo falhar ou o usuário tiver compras vazias
+    if (max_produtos_possiveis == 0) {
+        //std::cout << "[DEBUG] Parou no passo 2: O total de produtos em todas as compras resultou em 0.\n";
+        return;
+    }
+
+    // ... (O RESTO DO SEU CÓDIGO CONTINUA IGUAL A PARTIR DAQUI) ...
     // 3. Alocar vetores para consolidar os dados
     int* produtos_unicos = new int[max_produtos_possiveis];
     int* quantidades_totais = new int[max_produtos_possiveis];
     int qtd_unicos = 0; 
-
-    // 4. Processar cada compra e acumular as quantidades dos produtos
+    
+    // ... [MANTENHA O SEU LAÇO FOR ORIGINAL AQUI] ...
+    
     for (int i = 0; i < qtd_compras; i++) {
         Compra* c = buscar_compra_por_id(ids_compras_usuario[i]);
         if (c == nullptr) continue;
@@ -289,7 +305,6 @@ void Sistema::imprimir_produtos_usuario(int id_usuario) {
             int id_p = prods[j];
             int qtd_p = qnts[j];
 
-            // Verifica se o id_p já está no nosso vetor de produtos_unicos
             bool ja_existe = false;
             for (int k = 0; k < qtd_unicos; k++) {
                 if (produtos_unicos[k] == id_p) {
@@ -299,7 +314,6 @@ void Sistema::imprimir_produtos_usuario(int id_usuario) {
                 }
             }
 
-            // Se não encontrou, insere como um produto novo
             if (!ja_existe) {
                 produtos_unicos[qtd_unicos] = id_p;
                 quantidades_totais[qtd_unicos] = qtd_p;
@@ -308,22 +322,129 @@ void Sistema::imprimir_produtos_usuario(int id_usuario) {
         }
     }
 
-    // 5. Imprime estritamente no formato: produto_1 <id_p1> <qtd_p1> ...
+    // 5. Imprime estritamente no formato exigido
     if (qtd_unicos > 0) {
         for (int i = 0; i < qtd_unicos; i++) {
             std::cout << "produto_" << (i + 1) << " " 
                       << produtos_unicos[i] << " " 
                       << quantidades_totais[i];
             
-            // Adiciona espaço entre os blocos, exceto no último
             if (i < qtd_unicos - 1) {
                 std::cout << " ";
             }
         }
-        std::cout << std::endl; // Quebra de linha exigida no final da segunda linha
+        std::cout << std::endl;
     }
 
-    // 6. Liberação de memória dos vetores temporários
     delete[] produtos_unicos;
     delete[] quantidades_totais;
+}
+
+void Sistema::imprimir_compradores_do_produto(int id_produto) {
+    int qtd_compras = 0;
+    
+    // 1. Busca todas as compras que contêm este produto específico usando o índice
+    const int* ids_compras_produto = idx_compras.buscar_id_produto(id_produto, qtd_compras);
+
+    // Se ninguém comprou o produto, não imprime a segunda linha
+    if (qtd_compras == 0 || ids_compras_produto == nullptr) {
+        return; 
+    }
+
+    // 2. Aloca vetores temporários para consolidar os compradores únicos
+    // O pior caso (limite máximo) é se cada compra tiver sido feita por um usuário diferente
+    int* usuarios_unicos = new int[qtd_compras];
+    int* quantidades_totais = new int[qtd_compras];
+    int qtd_unicos = 0;
+
+    // 3. Varre as compras para consolidar quais usuários compraram e qual a quantidade acumulada
+    for (int i = 0; i < qtd_compras; i++) {
+        Compra* c = buscar_compra_por_id(ids_compras_produto[i]);
+        if (c == nullptr) continue;
+
+        int id_u = c->get_id_usuario();
+        
+        // Descobre a quantidade deste produto específico dentro desta compra
+        int qtd_no_id = 0;
+        int tam_compra = c->get_tamanho();
+        int* prods = c->get_id_produtos();
+        int* qnts = c->get_qnt_produtos();
+        
+        for (int j = 0; j < tam_compra; j++) {
+            if (prods[j] == id_produto) {
+                qtd_no_id = qnts[j];
+                break;
+            }
+        }
+
+        // Se por algum motivo o produto não estava na lista (segurança), pula
+        if (qtd_no_id == 0) continue;
+
+        // Verifica se este usuário já foi registrado no nosso vetor temporário
+        bool ja_existe = false;
+        for (int k = 0; k < qtd_unicos; k++) {
+            if (usuarios_unicos[k] == id_u) {
+                quantidades_totais[k] += qtd_no_id; // Usuário repetido: apenas acumula a quantidade
+                ja_existe = true;
+                break;
+            }
+        }
+
+        // Se for um usuário novo para este produto, adiciona-o ao vetor
+        if (!ja_existe) {
+            usuarios_unicos[qtd_unicos] = id_u;
+            quantidades_totais[qtd_unicos] = qtd_no_id;
+            qtd_unicos++;
+        }
+    }
+
+    // 4. Imprime estritamente no formato exigido:
+    // usuario_1 <id_u1> <qtd_u1> ... usuario_M <id_uM> <qtd_uM>
+    if (qtd_unicos > 0) {
+        for (int i = 0; i < qtd_unicos; i++) {
+            std::cout << "usuario_" << (i + 1) << " " 
+                      << usuarios_unicos[i] << " " 
+                      << quantidades_totais[i];
+            
+            // Adiciona espaço entre os blocos de usuários, mas não no final
+            if (i < qtd_unicos - 1) {
+                std::cout << " ";
+            }
+        }
+        std::cout << std::endl; // Quebra de linha obrigatória ao final da listagem
+    }
+
+    // 5. Liberação segura da memória alocada dinamicamente
+    delete[] usuarios_unicos;
+    delete[] quantidades_totais;
+}
+
+bool Sistema::validar_e_registrar_compra(const Compra& c) {
+    int tamanho = c.get_tamanho();
+    int* ids_produtos = c.get_id_produtos();
+    int* qnts = c.get_qnt_produtos();
+
+    // 1. Primeiro passo: Apenas verifica se TODOS têm estoque suficiente
+    for (int i = 0; i < tamanho; i++) {
+        Produto* p = buscar_produto_por_id(ids_produtos[i]);
+        if (p == nullptr || p->get_qnt() < qnts[i]) {
+            return false; // Estoque insuficiente ou produto não existe!
+        }
+    }
+
+    // 2. Segundo passo: Se todos passaram na validação, realiza a compra
+    if (qtd_compras == cap_compras) {
+        redimensionar_compras();
+    }
+    compras[qtd_compras] = c;
+    idx_compras.inserir_compra(c);
+
+    // Decrementa o estoque de fato
+    for (int i = 0; i < tamanho; i++) {
+        Produto* p = buscar_produto_por_id(ids_produtos[i]);
+        p->remover_estoque(qnts[i]);
+    }
+
+    qtd_compras++;
+    return true; // Compra realizada com sucesso
 }

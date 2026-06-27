@@ -1,5 +1,5 @@
 #include "Reposicao.hpp"
-
+#include <iostream>
 Reposicao::Reposicao(){
     id = -1;
     timestamp = -1;
@@ -94,4 +94,16 @@ Reposicao& Reposicao::operator=(const Reposicao& outra){
     }
 
     return *this;
+}
+
+void Reposicao::imprime_produtos(){
+    for(int i = 0; i < tamanho; i++){
+        std::cout << "produto_" << i + 1 << " " << id_produtos[i] << " " << qnt_produtos[i];
+        
+        // Só imprime o espaço separador se não for o último produto
+        if (i < tamanho - 1) {
+            std::cout << " ";
+        }
+    }
+    std::cout << std::endl;
 }

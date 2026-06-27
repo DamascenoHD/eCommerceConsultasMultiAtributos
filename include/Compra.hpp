@@ -27,7 +27,8 @@ class Compra {
         
 
         void adicionar_produto(int id_produto, int quantidade);
-
+        
+        void imprime_produtos();
 
 };  
 

@@ -1,5 +1,5 @@
 #include "Compra.hpp"
-
+#include <iostream>
 Compra::Compra(){
     id = -1;
     timestamp = -1;
@@ -110,4 +110,15 @@ Compra& Compra::operator=(const Compra& outra) {
     return *this;
 }
 
+void Compra::imprime_produtos(){
+    for(int i = 0; i < tamanho; i++){
+        std::cout << "produto_" << i + 1 << " " << id_produtos[i] << " " << qnt_produtos[i];
+        
+        // Só imprime o espaço separador se não for o último produto
+        if (i < tamanho - 1) {
+            std::cout << " ";
+        }
+    }
+    std::cout << std::endl;
+}
 

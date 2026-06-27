@@ -23,6 +23,8 @@ private:
 
         Reposicao(const Reposicao& outra);
         Reposicao& operator=(const Reposicao& outra);
+
+        void imprime_produtos();
 };
 
 #endif

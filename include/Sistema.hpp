@@ -80,6 +80,8 @@ public:
     static int* intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int& qtd_res);
 
     void imprimir_produtos_usuario(int id_usuario);
+    void imprimir_compradores_do_produto(int id_produto);
+    bool validar_e_registrar_compra(const Compra& c);
 };
 
 #endif

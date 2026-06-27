@@ -8,8 +8,6 @@ IndiceReposicoes::IndiceReposicoes() {
 
 // Insere uma nova reposição em todos os índices
 void IndiceReposicoes::inserir_reposicao(const Reposicao& r) {
-    // 1. Indexa o timestamp da reposição
-    // Mapeia: "string_do_timestamp" -> id_da_reposicao
     timestamp.inserir(std::to_string(r.get_timestamp()), r.get_id());
 
     // 2. Indexa CADA produto contido nessa reposição
