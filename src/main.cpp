@@ -86,6 +86,16 @@ int main() {
                         ids_atual = sistema.listar_usuarios_por_estado(valor, qtd_atual);
                     }else if(atributo=="nacionalidade"){
                         ids_atual = sistema.listar_usuarios_por_nacionalidade(valor, qtd_atual);
+                    }else if(atributo=="id"){
+                        int id;
+                        stringstream ss2(valor);
+                        ss2 >> id;
+                        if(sistema.buscar_usuario_por_id(id)!=nullptr){
+                            int* user_id  = new int[1];
+                            user_id[0] = id;
+                            ids_atual = user_id;
+                            qtd_atual = 1;
+                        }
                     }
                     if(resultado_acumulado == nullptr){
                         resultado_acumulado = ids_atual;
@@ -111,15 +121,20 @@ int main() {
                     precisa_liberar = true; // Ag  
                     }
                 }
-
-                for(int i = 0; i < qtd_acumulada; i++){
-                    Usuario *usuario = sistema.buscar_usuario_por_id(resultado_acumulado[i]);
-                    cout << "LU resultado_" << i+1 << " usuario " 
-                    << resultado_acumulado[i] << " " << usuario->get_nome() 
-                    << " " << usuario->get_idade() << " " 
-                    << usuario->get_cidade() << " " << usuario->get_estado() 
-                    << " " << usuario->get_nacionalidade() << endl;
-                    sistema.imprimir_produtos_usuario(usuario->get_id());
+                if(qtd_acumulada==0){
+                    cout << "LU VAZIO" << endl;
+                }else{
+                    for(int i = 0; i < qtd_acumulada; i++){
+                        Usuario *usuario = sistema.buscar_usuario_por_id(resultado_acumulado[i]);
+                        if(usuario != nullptr) {
+                            cout << "LU resultado_" << i+1 << " usuario " 
+                            << resultado_acumulado[i] << " " << usuario->get_nome() 
+                            << " " << usuario->get_idade() << " " 
+                            << usuario->get_cidade() << " " << usuario->get_estado() 
+                            << " " << usuario->get_nacionalidade() << endl;
+                            sistema.imprimir_produtos_usuario(usuario->get_id());
+                        }
+                    }
                 }
 
                 if(precisa_liberar && resultado_acumulado != nullptr){
@@ -138,10 +153,12 @@ int main() {
                         int id;
                         stringstream ss2(valor);
                         ss2 >> id;
-                        int* user_id  = new int[1];
-                        user_id[0] = id;
-                        ids_atual = user_id;
-                        qtd_atual = 1;
+                        if(sistema.buscar_produto_por_id(id)!=nullptr){
+                            int* user_id  = new int[1];
+                            user_id[0] = id;
+                            ids_atual = user_id;
+                            qtd_atual = 1;
+                        }
                     }else if(atributo=="nome"){
                         ids_atual = sistema.listar_produtos_por_nome(valor, qtd_atual);
                     }else if(atributo=="categoria"){
@@ -169,14 +186,20 @@ int main() {
                         precisa_liberar = true; // Ag  
                     }
                 }
-                for(int i = 0; i < qtd_acumulada; i++){
-                    Produto *produto = sistema.buscar_produto_por_id(resultado_acumulado[i]);
-                    cout << "LP resultado_" << i+1 << " produto " <<
-                    resultado_acumulado[i] << " " << produto->get_nome() << " " 
-                    << fixed << setprecision(2) << produto->get_preco() << " " 
-                    << produto->get_qnt() << " " << produto->get_categoria() 
-                    << " " << produto->get_marca() << " " << produto->get_condicao() << endl;
-                    sistema.imprimir_compradores_do_produto(produto->get_id());
+                if(qtd_acumulada==0){
+                    cout << "LP VAZIO" << endl;
+                }else{
+                    for(int i = 0; i < qtd_acumulada; i++){
+                        Produto *produto = sistema.buscar_produto_por_id(resultado_acumulado[i]);
+                        if(produto != nullptr) {
+                            cout << "LP resultado_" << i+1 << " produto " <<
+                            resultado_acumulado[i] << " " << produto->get_nome() << " " 
+                            << fixed << setprecision(2) << produto->get_preco() << " " 
+                            << produto->get_qnt() << " " << produto->get_categoria() 
+                            << " " << produto->get_marca() << " " << produto->get_condicao() << endl;
+                            sistema.imprimir_compradores_do_produto(produto->get_id());
+                        }
+                    }
                 }
 
                 if(precisa_liberar && resultado_acumulado != nullptr){
@@ -187,6 +210,8 @@ int main() {
                 const int* resultado_acumulado = nullptr;
                 int qtd_acumulada = 0;
                 bool precisa_liberar = false;
+                
+                // IMPORTANTE: Ler todos os pares atributo/valor
                 while(ss >> atributo >> valor){
                     const int* ids_atual = nullptr;
                     int qtd_atual = 0;
@@ -195,10 +220,13 @@ int main() {
                         int id;
                         stringstream ss2(valor);
                         ss2 >> id;
-                        int* compra_id  = new int[1];
-                        compra_id[0] = id;
-                        ids_atual = compra_id;
-                        qtd_atual = 1;
+                        if(sistema.buscar_compra_por_id(id)!=nullptr){
+                            int* compra_id  = new int[1];
+                            compra_id[0] = id;
+                            ids_atual = compra_id;
+                            qtd_atual = 1;
+                        }
+                        
                     }else if(atributo=="timestamp"){
                         int timestamp;
                         stringstream ss2(valor);
@@ -215,32 +243,40 @@ int main() {
                         ss2 >> id;
                         ids_atual = sistema.listar_compras_por_id_produto(id, qtd_atual);
                     }
+                    
                     if(resultado_acumulado == nullptr){
                         resultado_acumulado = ids_atual;
                         qtd_acumulada = qtd_atual;
                     }else{
                         int qtd_nova = 0;
-                    // Capturamos o novo vetor alocado com 'new' pela função intersectar
-                    int* nova_intersecao = sistema.intersectar(
-                        resultado_acumulado, qtd_acumulada, 
-                        ids_atual, qtd_atual, 
-                        qtd_nova);
+                        int* nova_intersecao = sistema.intersectar(
+                            resultado_acumulado, qtd_acumulada, 
+                            ids_atual, qtd_atual, 
+                            qtd_nova);
                         if(precisa_liberar){
                             delete[] resultado_acumulado;
                         }
                         resultado_acumulado = nova_intersecao;
                         qtd_acumulada = qtd_nova;
-                        precisa_liberar = true; // Ag  
+                        precisa_liberar = true;
                     }
                 }
-                for(int i = 0; i < qtd_acumulada; i++){
-                    Compra *compra = sistema.buscar_compra_por_id(resultado_acumulado[i]);
-                    cout << "LC resultado_" << i+1 << " compra " 
-                    << resultado_acumulado[i] << " timestamp "
-                    << compra->get_timestamp() << " usuario " << 
-                    compra->get_id_usuario() << endl;
-                    compra->imprime_produtos();
+                
+                if(qtd_acumulada==0){
+                    cout << "LC VAZIO" << endl;
+                }else{
+                    for(int i = 0; i < qtd_acumulada; i++){
+                        Compra *compra = sistema.buscar_compra_por_id(resultado_acumulado[i]);
+                        if(compra != nullptr) {
+                            cout << "LC resultado_" << i+1 << " compra " 
+                            << resultado_acumulado[i] << " timestamp "
+                            << compra->get_timestamp() << " usuario " << 
+                            compra->get_id_usuario() << endl;
+                            compra->imprime_produtos();
+                        }
+                    }
                 }
+                
                 if(precisa_liberar && resultado_acumulado != nullptr){
                     delete[] resultado_acumulado;
                 }
@@ -258,10 +294,12 @@ int main() {
                         int id;
                         stringstream ss2(valor);
                         ss2 >> id;
-                        int* rep_id  = new int[1];
-                        rep_id[0] = id;
-                        ids_atual = rep_id;
-                        qtd_atual = 1;
+                        if(sistema.buscar_reposicao_por_id(id)!=nullptr){
+                            int* rep_id  = new int[1];
+                            rep_id[0] = id;
+                            ids_atual = rep_id;
+                            qtd_atual = 1;
+                        }
                     }else if(atributo=="timestamp"){
                         int timestamp;
                         stringstream ss2(valor);
@@ -291,12 +329,18 @@ int main() {
                         precisa_liberar = true; // Ag  
                     }
                 }
-                for(int i = 0; i < qtd_acumulada; i++){
-                    Reposicao *reposicao = sistema.buscar_reposicao_por_id(resultado_acumulado[i]);
-                    cout << "LR resultado_" << i+1 << " reposicao " 
-                    << resultado_acumulado[i] << " timestamp "
-                    << reposicao->get_timestamp() << endl;
-                    reposicao->imprime_produtos();
+                if(qtd_acumulada==0){
+                    cout << "LR VAZIO" << endl;
+                }else{
+                    for(int i = 0; i < qtd_acumulada; i++){
+                        Reposicao *reposicao = sistema.buscar_reposicao_por_id(resultado_acumulado[i]);
+                        if(reposicao != nullptr) {
+                            cout << "LR resultado_" << i+1 << " reposicao " 
+                            << resultado_acumulado[i] << " timestamp "
+                            << reposicao->get_timestamp() << endl;
+                            reposicao->imprime_produtos();
+                        }
+                    }
                 }
 
                 if(precisa_liberar && resultado_acumulado != nullptr){

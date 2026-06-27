@@ -25,6 +25,10 @@ private:
         Reposicao& operator=(const Reposicao& outra);
 
         void imprime_produtos();
+
+        void merge_sort(int* ids, int* qnts, int esquerda, int direita);
+        void merge(int* ids, int* qnts, int esquerda, int meio, int direita);
+        
 };
 
 #endif

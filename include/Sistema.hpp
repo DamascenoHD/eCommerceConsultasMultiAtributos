@@ -82,6 +82,8 @@ public:
     void imprimir_produtos_usuario(int id_usuario);
     void imprimir_compradores_do_produto(int id_produto);
     bool validar_e_registrar_compra(const Compra& c);
+    void merge_sort(int* ids, int* qnts, int esquerda, int direita);
+    void merge(int* ids, int* qnts, int esquerda, int meio, int direita);
 };
 
 #endif

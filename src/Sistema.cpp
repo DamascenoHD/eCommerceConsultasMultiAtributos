@@ -71,18 +71,29 @@ void Sistema::redimensionar_reposicoes() {
 
 
 Usuario* Sistema::buscar_usuario_por_id(int id) {
-    
-    return &usuarios[id];
+    if (id >= 0 && id < qtd_usuarios) {
+        return &usuarios[id];
+    }
+    return nullptr;
 }
 
 Produto* Sistema::buscar_produto_por_id(int id) {
-    return &produtos[id];
+    if (id >= 0 && id < qtd_produtos) {
+        return &produtos[id];
+    }
+    return nullptr;
 }
 Compra* Sistema::buscar_compra_por_id(int id) {
-    return &compras[id];
+    if (id >= 0 && id < qtd_compras) {
+        return &compras[id];
+    }
+    return nullptr;
 }
 Reposicao* Sistema::buscar_reposicao_por_id(int id) {
-    return &reposicoes[id];
+    if (id >= 0 && id < qtd_reposicoes) {
+        return &reposicoes[id];
+    }
+    return nullptr;
 }
 
 void Sistema::cadastrar_usuario(const Usuario& u) {
@@ -250,16 +261,10 @@ int* Sistema::intersectar(const int* v1, int qtd1, const int* v2, int qtd2, int&
 
 void Sistema::imprimir_produtos_usuario(int id_usuario) {
     int qtd_compras = 0;
-    //std::cout << "[DEBUG] To aqui. Buscando compras para usuario " << id_usuario << "\n";
     
-    // 1. Busca todas as compras que esse usuário fez
     const int* ids_compras_usuario = idx_compras.buscar_id_usuario(id_usuario, qtd_compras);
 
-    //std::cout << "[DEBUG] Quantidade de compras encontradas no indice: " << qtd_compras << "\n";
-
-    // Se o usuário não tiver nenhuma compra, sai
     if (qtd_compras == 0 || ids_compras_usuario == nullptr) {
-        //std::cout << "[DEBUG] Parou no passo 1: Indice de compras retornou 0 ou nulo.\n";
         return; 
     }
 
@@ -270,18 +275,15 @@ void Sistema::imprimir_produtos_usuario(int id_usuario) {
         Compra* c = buscar_compra_por_id(id_compra_atual);
         
         if (c != nullptr) {
-            //std::cout << "[DEBUG] Compra ID " << id_compra_atual << " encontrada. Tamanho de produtos nela: " << c->get_tamanho() << "\n";
             max_produtos_possiveis += c->get_tamanho();
         } else {
-            //std::cout << "[DEBUG] ALERTA: Compra ID " << id_compra_atual << " retornou nullptr!\n";
         }
     }
 
-    //std::cout << "[DEBUG] Maximo de produtos possiveis acumulados: " << max_produtos_possiveis << "\n";
+   
 
     // Se o cálculo falhar ou o usuário tiver compras vazias
     if (max_produtos_possiveis == 0) {
-        //std::cout << "[DEBUG] Parou no passo 2: O total de produtos em todas as compras resultou em 0.\n";
         return;
     }
 
@@ -321,7 +323,9 @@ void Sistema::imprimir_produtos_usuario(int id_usuario) {
             }
         }
     }
-
+    if(qtd_unicos>1){
+        merge_sort(produtos_unicos, quantidades_totais, 0, qtd_unicos - 1);
+    }
     // 5. Imprime estritamente no formato exigido
     if (qtd_unicos > 0) {
         for (int i = 0; i < qtd_unicos; i++) {
@@ -397,7 +401,9 @@ void Sistema::imprimir_compradores_do_produto(int id_produto) {
             qtd_unicos++;
         }
     }
-
+    if(qtd_unicos>1){
+        merge_sort(usuarios_unicos, quantidades_totais, 0, qtd_unicos - 1);
+    }
     // 4. Imprime estritamente no formato exigido:
     // usuario_1 <id_u1> <qtd_u1> ... usuario_M <id_uM> <qtd_uM>
     if (qtd_unicos > 0) {
@@ -447,4 +453,76 @@ bool Sistema::validar_e_registrar_compra(const Compra& c) {
 
     qtd_compras++;
     return true; // Compra realizada com sucesso
+}
+
+void Sistema::merge(int* ids, int* qnts, int esquerda, int meio, int direita) {
+    int n1 = meio - esquerda + 1;
+    int n2 = direita - meio;
+    
+    // Cria arrays temporários
+    int* temp_ids_esq = new int[n1];
+    int* temp_qnt_esq = new int[n1];
+    int* temp_ids_dir = new int[n2];
+    int* temp_qnt_dir = new int[n2];
+    
+    // Copia dados para os arrays temporários
+    for (int i = 0; i < n1; i++) {
+        temp_ids_esq[i] = ids[esquerda + i];
+        temp_qnt_esq[i] = qnts[esquerda + i];
+    }
+    for (int j = 0; j < n2; j++) {
+        temp_ids_dir[j] = ids[meio + 1 + j];
+        temp_qnt_dir[j] = qnts[meio + 1 + j];
+    }
+    
+    // Intercala os arrays temporários de volta para o array original
+    int i = 0, j = 0, k = esquerda;
+    while (i < n1 && j < n2) {
+        if (temp_ids_esq[i] <= temp_ids_dir[j]) {
+            ids[k] = temp_ids_esq[i];
+            qnts[k] = temp_qnt_esq[i];
+            i++;
+        } else {
+            ids[k] = temp_ids_dir[j];
+            qnts[k] = temp_qnt_dir[j];
+            j++;
+        }
+        k++;
+    }
+    
+    // Copia os elementos restantes de temp_ids_esq (se houver)
+    while (i < n1) {
+        ids[k] = temp_ids_esq[i];
+        qnts[k] = temp_qnt_esq[i];
+        i++;
+        k++;
+    }
+    
+    // Copia os elementos restantes de temp_ids_dir (se houver)
+    while (j < n2) {
+        ids[k] = temp_ids_dir[j];
+        qnts[k] = temp_qnt_dir[j];
+        j++;
+        k++;
+    }
+    
+    // Libera memória temporária
+    delete[] temp_ids_esq;
+    delete[] temp_qnt_esq;
+    delete[] temp_ids_dir;
+    delete[] temp_qnt_dir;
+}
+
+// Função recursiva do Merge Sort
+void Sistema::merge_sort(int* ids, int* qnts, int esquerda, int direita) {
+    if (esquerda < direita) {
+        int meio = esquerda + (direita - esquerda) / 2;
+        
+        // Ordena a primeira e segunda metade
+        merge_sort(ids, qnts, esquerda, meio);
+        merge_sort(ids, qnts, meio + 1, direita);
+        
+        // Mescla as metades ordenadas
+        merge(ids, qnts, esquerda, meio, direita);
+    }
 }
